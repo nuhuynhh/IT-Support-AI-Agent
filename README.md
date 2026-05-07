@@ -1,210 +1,193 @@
-# IT Support Multi-Agent System
-An AI-powered IT Support System built using LangGraph, ChromaDB, RAG (Retrieval-Augmented Generation), and a Mock MCP Client to automate common IT support workflows such as password resets, VPN troubleshooting, and employee onboarding support.
+AI IT Help Desk Chatbot
+Multi-Agent System Design, Tool Integration, Testing 
 
-# Project Overview
-This system simulates a real-world enterprise IT support environment using multiple AI agents that collaborate to classify requests, retrieve knowledge from internal documentation, automate workflow actions, and escalate unresolved incidents.
-The project combines:
+1. Problem Definition & Use Case:
 
-* Multi-Agent Orchestration
-* Retrieval-Augmented Generation (RAG)
-* Vector Databases
-* Workflow Automation
-* Mock MCP Tool Integration
-* Escalation Routing
+The AI IT Help Desk Chatbot is designed to transform the efficiency of institutional support by automating high-frequency, low-complexity technical requests. The system functions as a digital Product Owner to streamline service workflows for three primary groups: College Students facing remote account lockouts, Faculty and Staff whose productivity is hindered by repetitive IT hurdles, and IT Departments burdened by manual credential verification . By integrating multi-agent automation and retrieval-augmented generation (RAG), the system aims to eliminate traditional support bottlenecks, providing users with immediate, 24/7 assistance while allowing human technicians to focus on critical infrastructure tasks. 
 
-Features
-Multi-Agent AI Workflow
-LangGraph Agent Orchestration
-Retrieval-Augmented Generation (RAG)
-ChromaDB Vector Database
-PDF Knowledge Base Retrieval
-Mock MCP Workflow Automation
-Ticket Escalation Simulation
-Structured IT Troubleshooting Flows
-System Architecture
-User Request
-    ↓
+2. Target Users:
+
+User Group
+Problems
+Success Metric
+End Users & Students
+Frustrating wait times for basic access and remote login failures.
+<5 Minute resolution for credential and lockout issues.
+New Employees
+Confusion from fragmented onboarding steps and lack of after-hours guidance.
+90% Completion Rate for all system setups on the first day.
+IT Department
+Operational drain caused by routine tickets instead of technical priorities.
+90% Reduction in manual intervention for standard password requests.
+
+
+3. Detailed Use Cases
+
+Use Case 1: Password Reset & Account Lockout
+Trigger: User is locked out or enters an incorrect password.
+Actors: User, Intake Agent, Workflow Agent, MCP Client.
+Process: User provides identity information; Workflow Agent uses mfa.verify_identity and idp.reset_password to automate the reset.
+Success: New password created without human IT intervention.
+Use Case 2: VPN & Network Connectivity
+Trigger: Authentication errors or slow remote performance.
+Actors: Intake Agent, Knowledge Agent (PDF troubleshooting), Workflow Agent (Log checks).
+Inputs: User message and VPN status logs.
+Output: Troubleshooting guidance or an automated ticket via itsm.create_ticket if unresolved.
+Use Case 3: New Employee IT Onboarding
+Trigger: New hire needs help setting up systems.
+Process: Intake Agent classifies as onboarding_help; Knowledge Agent retrieves setup docs from Chroma DB.
+Output: Structured, 24/7 guidance for account and software setup.
+4. Implementation & Scaling
+
+System Dependencies
+Directory Services: User directory and Password reset portals.
+Infrastructure: MFA systems, VPN clients, and Ticketing systems.
+Data: IT support documentation and network logs.
+Success Targets
+Metric Category
+Key Performance Indicator (KPI)
+Target Goal
+Response Speed
+Resolution time for password/account access.
+<5 Minutes
+Automation
+Reduction in manual IT password interventions
+90% decrease
+Efficiency
+First-contact resolution rate for account issues.
+>80% Rate
+Volume
+Reduction in overall password-related ticket volume.
+30% Decrease
+VPN Support
+Manual IT intervention for basic VPN troubleshooting.
+40% Reduction
+Onboarding
+Delivery time for initial IT setup guidance.
+<2 Minutes
+Onboarding
+New hire IT setup completion on the first day.
+>90% Rate
+Satisfaction
+Average user satisfaction score across all agents.
+>4.5/5 Score
+
+
+5. System Architecture & Agent Roles
+
+The Copilot utilizes a specialized Multi-Agent framework where each agent is responsible for a distinct phase of the support lifecycle.
+Agent
+Primary Function
+Key Responsibilities
 Intake Agent
-    ↓
-Knowledge Agent (RAG + ChromaDB)
-    ↓
-Workflow Agent (Mock MCP Client)
-    ↓
-Escalation Agent
-    ↓
-Final Response / Ticket Creation
-
-Technology Stack:
-Technology
-Purpose
-Python
-Core development language
-Google Colab
-Development environment
-LangGraph
-Multi-agent orchestration
-LangChain
-LLM + RAG framework
-OpenAI API
-LLM + embeddings
-ChromaDB
-Vector database
-PyPDFLoader
-PDF ingestion
-Mock MCP Client
-Simulated tool integrations
-
-
-Agent Roles
-Intake Agent
-Responsible for:
-Classifying user requests
-Detecting request type
-Routing requests between agents
-Example intents:
-reset_password
-unlock_account
-vpn_issue
-onboarding_help
+Classification & Routing
+Acts as the primary point of contact for all technical requests .
+Interprets user intent to classify issue type, category, and urgency .
+Automates ticket creation and routes tasks to the appropriate downstream agent.
 Knowledge Agent
-Responsible for:
-Retrieving troubleshooting documentation
-Querying ChromaDB vector database
-Generating contextual IT support responses
-The Knowledge Agent uses:
-OpenAI embeddings
-ChromaDB
-PDF retrieval pipelines
+Information Retrieval
+Utilizes Retrieval Augmented Generation (RAG) with embeddings and vector databases .
+Locates accurate context to provide documentation and troubleshooting steps .
+Continuously refines response accuracy based on incoming data.
 Workflow Agent
-Responsible for:
-Simulating IT workflow automations
-Calling Mock MCP tools
-Performing automated support actions
-Examples:
-Password reset simulation
-Account unlock simulation
-VPN log inspection
-Ticket creation
+Task Execution
+Performs automated actions like password resets and system diagnostic checks .
+Integrates with internal APIs and follows predefined business logic .
+Logs all actions and outcomes for auditing and tracking purposes.
 Escalation Agent
-Responsible for:
-Escalating unresolved issues
-Creating support tickets
-Routing requests to human IT technicians
-Retrieval-Augmented Generation (RAG)
-The system uses ChromaDB as a vector database to store embedded chunks from uploaded IT support documents.
-Uploaded PDF Documents
-Corporate VPN Access Policy
-Password Reset Runbook
-IT Onboarding Guide for New Employees
-RAG Workflow
-User Question
-    ↓
-Knowledge Agent
-    ↓
-ChromaDB Retrieval
-    ↓
-Relevant PDF Chunks Retrieved
-    ↓
-LLM Generates Contextual IT Support Response
+Human Handoff
+Detects complex or unresolved cases that require manual intervention .
+Prioritizes tickets based on their severity and organizational impact .
+Provides the human technician with full interaction history for a seamless handoff.
 
-Mock MCP Client
-A Mock MCP (Model Context Protocol) Client was implemented to simulate enterprise IT system integrations.
-Supported Mock Tools
 
+6. Technical Implementation & Tool Integration
+
+The system is built on a LangGraph pipeline, utilizing a Mock Model Context Protocol (MCP) to allow agents to interact directly with external IT infrastructure through specialized tools.
+Mock MCP Toolbox:
 Tool Name
-Purpose
+Functionality
+Code Implementation Logic
 mfa.verify_identity
-Simulates MFA verification
+Validates user identity via multi-factor prompts.
+Executes security handshake before credential changes.
 idp.reset_password
-Simulates password reset
+Triggers a secure password reset in the directory.
+Interfaces with identity provider to update user credentials.
 idp.unlock_account
-Simulates account unlock
+Clears account lockout flags.
+Resets failed login counters in the user directory.
 logs.get_recent
-Simulates VPN log retrieval
+Retrieves the last 10-15 network/VPN logs.
+Scans system logs for authentication or timeout errors.
 itsm.create_ticket
-Simulates ticket creation
-itsm.create_incident
-Simulates incident escalation
+Generates a structured help desk ticket.
+Formats user data and logs into a ticket for human review.
 
 
-The Mock MCP Client demonstrates standardized tool interaction between AI agents and enterprise systems.
-Use Cases
-1. Password Reset & Account Lockout Resolution
-Workflow + MCP + Automation
-Features
-Password reset simulation
-Account unlock simulation
-MFA verification
-Escalation support
-Objectives
-Reduce repetitive IT workload
-Improve support response speed
-Automate identity-related workflows
-User forgets password
-    ↓
-Intake Agent classifies request
-    ↓
-Workflow Agent verifies identity
-    ↓
-Mock MCP resets password
-    ↓
-Escalation Agent creates ticket if needed
+7. RAG Integration and Data Pipeline
 
-2. VPN & Network Connectivity Troubleshooting
-RAG + Workflow + Escalation
-Features
-VPN troubleshooting retrieval
-Log inspection simulation
-Ticket escalation
-Objectives
-Reduce VPN troubleshooting time
-Improve ticket quality
-Support remote employees
-User reports VPN issue
-    ↓
-Knowledge Agent retrieves VPN troubleshooting steps
-    ↓
-Workflow Agent simulates log inspection
-    ↓
-Escalation Agent creates support ticket if unresolved
-
-3. New Employee IT Onboarding Support
-RAG-Based Self-Service Support
-Features
-Onboarding documentation retrieval
-Guided setup instructions
-Self-service onboarding assistance
-Objectives
-Reduce repetitive onboarding questions
-Improve onboarding completion rate
-Provide 24/7 onboarding support
-New employee asks onboarding question
-    ↓
-Knowledge Agent retrieves onboarding documentation
-    ↓
-System returns structured setup guidance
-
-Future Improvements
-Potential future enhancements include:
-Real MCP Server Integration
-Docker Deployment
-Jira/GitHub Ticketing Integration
-Web-Based Frontend UI
-Real Authentication APIs
-Persistent User Memory
-Multi-User Support
-Enterprise Logging & Observability
-
-Lessons Learned
-This project demonstrates:
-Multi-agent orchestration
-RAG architecture design
-Vector database implementation
-Enterprise workflow automation
-AI-assisted IT support systems
-MCP-based tool integration concepts
+The Knowledge Agent utilizes a Retrieval-Augmented Generation (RAG) framework to provide evidence-based solutions derived directly from official IT documentation.
+Information Retrieval Architecture
+Vector Database: The system uses Chroma DB as a centralized repository for high-dimensional vector embeddings of IT manuals and PDFs.
+Document Processing: Technical manuals are chunked and converted into embeddings to ensure the agent can pinpoint specific troubleshooting steps.
+Contextual Prompting: When a user asks a question, the system retrieves relevant document snippets and injects them into the LLM prompt to prevent "hallucinations".
+Knowledge Sources:
+Source Type
+Data Included
+Agent Application
+IT Handbooks
+WiFi configuration, VPN setup, and MFA enrollment.
+Troubleshooting connectivity issues.
+Onboarding Guides
+New hire checklists, software installation, and HR tool access.
+Guiding new employees through setup.
+System Logs
+Historical error patterns and diagnostic metadata.
+Assisting the Workflow Agent in diagnostics.
 
 
 
 
+
+
+
+
+
+5. Industry Awareness & Competitive Positioning
+
+The AI IT Help Desk Chatbot is designed as a "lightweight" alternative to enterprise-grade AI platforms. While large-scale vendors offer broad integrations, this project focuses on high-impact, university-specific automation at a fraction of the cost and complexity.
+Vendor Comparison Table:
+Feature
+Glean
+Moveworks
+Our AI Copilot (Prototype)
+Primary Focus
+Enterprise-wide Search & Knowledge Discovery.
+IT, HR, and Employee Experience Automation.
+Targeted IT Support & Account Recovery.
+Automation
+Search-first; limited direct system actions.
+High; specialized Reasoning Engine for tasks.
+High; tool-based automation via MCP.
+Implementation
+Weeks to Months (heavy IT involvement).
+Months (vendor-managed services).
+Rapid (Lightweight LangGraph Pipeline).
+Deployment Cost
+~$60,000+ Annual Minimum.
+~$50k - $200k+ annually.
+Minimal (Open-source / API-based).
+Target User
+Fortune 500 Enterprises.
+Large Corporate IT Departments.
+Higher Ed & Specialized Departments.
+
+
+Scaling & Future Scope
+
+The architecture is designed to grow alongside the institution’s needs.
+Horizontal Scaling: Leveraging LangGraph’s state management to handle hundreds of concurrent student sessions.
+Expanded Knowledge Base: Integrating additional departmental silos (e.g., Financial Aid or Registrar IT) into the Chroma Vector DB.
+Advanced Diagnostics: Future iterations will include device.quarantine tools to handle security threats or malware detection automatically.
 
